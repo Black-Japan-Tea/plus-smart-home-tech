@@ -22,13 +22,21 @@ public class EventController {
     @PostMapping("/sensors")
     @ResponseStatus(HttpStatus.OK)
     public void collectSensorEvent(@Valid @RequestBody SensorEvent event) {
-        collectorService.collectSensorEvent(event);
+        try {
+            collectorService.collectSensorEvent(event);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to process sensor event", e);
+        }
     }
 
     @PostMapping("/hubs")
     @ResponseStatus(HttpStatus.OK)
     public void collectHubEvent(@Valid @RequestBody HubEvent event) {
-        collectorService.collectHubEvent(event);
+        try {
+            collectorService.collectHubEvent(event);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to process hub event", e);
+        }
     }
 }
 
