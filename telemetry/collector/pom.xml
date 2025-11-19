@@ -45,11 +45,6 @@
             <artifactId>kafka-clients</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.4.3</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>

@@ -19,16 +19,28 @@ public class CollectorServiceImpl implements CollectorService {
 
     @Override
     public void collectSensorEvent(SensorEvent event) {
-        log.debug("Received sensor event: {}", event);
-        var avroEvent = avroMapper.toAvro(event);
-        kafkaProducerService.sendSensorEvent(avroEvent);
+        try {
+            log.debug("Received sensor event: {}", event);
+            var avroEvent = avroMapper.toAvro(event);
+            kafkaProducerService.sendSensorEvent(avroEvent);
+            log.debug("Successfully processed sensor event: {}", event.getId());
+        } catch (Exception e) {
+            log.error("Error processing sensor event: {}", event, e);
+            throw e;
+        }
     }
 
     @Override
     public void collectHubEvent(HubEvent event) {
-        log.debug("Received hub event: {}", event);
-        var avroEvent = avroMapper.toAvro(event);
-        kafkaProducerService.sendHubEvent(avroEvent);
+        try {
+            log.debug("Received hub event: {}", event);
+            var avroEvent = avroMapper.toAvro(event);
+            kafkaProducerService.sendHubEvent(avroEvent);
+            log.debug("Successfully processed hub event: {}", event.getHubId());
+        } catch (Exception e) {
+            log.error("Error processing hub event: {}", event, e);
+            throw e;
+        }
     }
 }
 
