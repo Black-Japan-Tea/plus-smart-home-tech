@@ -7,4 +7,3 @@ public interface KafkaProducerService {
     void sendSensorEvent(SensorEventAvro event);
     void sendHubEvent(HubEventAvro event);
 }
-
