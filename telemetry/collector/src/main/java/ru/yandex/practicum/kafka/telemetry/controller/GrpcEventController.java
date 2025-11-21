@@ -24,12 +24,13 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.debug("Received sensor event via gRPC: {}", request.getId());
+            log.info("Received sensor event via gRPC: {}", request.getId());
             var dto = protobufMapper.toDto(request);
             collectorService.collectSensorEvent(dto);
             
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
+            log.debug("Successfully processed sensor event: {}", request.getId());
         } catch (Exception e) {
             log.error("Error processing sensor event: {}", request.getId(), e);
             responseObserver.onError(new StatusRuntimeException(
@@ -43,12 +44,13 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     @Override
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.debug("Received hub event via gRPC: {}", request.getHubId());
+            log.info("Received hub event via gRPC: {}", request.getHubId());
             var dto = protobufMapper.toDto(request);
             collectorService.collectHubEvent(dto);
             
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
+            log.debug("Successfully processed hub event: {}", request.getHubId());
         } catch (Exception e) {
             log.error("Error processing hub event: {}", request.getHubId(), e);
             responseObserver.onError(new StatusRuntimeException(
