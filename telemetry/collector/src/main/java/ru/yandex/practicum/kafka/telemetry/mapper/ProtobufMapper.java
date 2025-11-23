@@ -83,8 +83,18 @@ public class ProtobufMapper {
             throw new IllegalArgumentException("Unknown sensor event payload type: " + payloadCase);
         }
 
-        event.setId(proto.getId());
-        event.setHubId(proto.getHubId());
+        String id = proto.getId();
+        String hubId = proto.getHubId();
+        
+        if (id.isEmpty()) {
+            throw new IllegalArgumentException("Sensor event id cannot be null or empty");
+        }
+        if (hubId.isEmpty()) {
+            throw new IllegalArgumentException("Sensor event hubId cannot be null or empty");
+        }
+        
+        event.setId(id);
+        event.setHubId(hubId);
         event.setTimestamp(timestamp);
 
         return event;
@@ -135,7 +145,13 @@ public class ProtobufMapper {
             throw new IllegalArgumentException("Unknown hub event payload type: " + payloadCase);
         }
 
-        event.setHubId(proto.getHubId());
+        String hubId = proto.getHubId();
+        
+        if (hubId.isEmpty()) {
+            throw new IllegalArgumentException("Hub event hubId cannot be null or empty");
+        }
+        
+        event.setHubId(hubId);
         event.setTimestamp(timestamp);
 
         return event;
@@ -150,75 +166,45 @@ public class ProtobufMapper {
     }
 
     private DeviceType mapDeviceType(DeviceTypeProto proto) {
-        switch (proto) {
-            case MOTION_SENSOR:
-                return DeviceType.MOTION_SENSOR;
-            case TEMPERATURE_SENSOR:
-                return DeviceType.TEMPERATURE_SENSOR;
-            case LIGHT_SENSOR:
-                return DeviceType.LIGHT_SENSOR;
-            case CLIMATE_SENSOR:
-                return DeviceType.CLIMATE_SENSOR;
-            case SWITCH_SENSOR:
-                return DeviceType.SWITCH_SENSOR;
-            case UNRECOGNIZED:
-                throw new IllegalArgumentException("Unknown device type: " + proto);
-            default:
-                throw new IllegalArgumentException("Unknown device type: " + proto);
-        }
+        return switch (proto) {
+            case MOTION_SENSOR -> DeviceType.MOTION_SENSOR;
+            case TEMPERATURE_SENSOR -> DeviceType.TEMPERATURE_SENSOR;
+            case LIGHT_SENSOR -> DeviceType.LIGHT_SENSOR;
+            case CLIMATE_SENSOR -> DeviceType.CLIMATE_SENSOR;
+            case SWITCH_SENSOR -> DeviceType.SWITCH_SENSOR;
+            default -> throw new IllegalArgumentException("Unknown device type: " + proto);
+        };
     }
 
     private ConditionType mapConditionType(ConditionTypeProto proto) {
-        switch (proto) {
-            case MOTION:
-                return ConditionType.MOTION;
-            case LUMINOSITY:
-                return ConditionType.LUMINOSITY;
-            case SWITCH:
-                return ConditionType.SWITCH;
-            case TEMPERATURE:
-                return ConditionType.TEMPERATURE;
-            case CO2LEVEL:
-                return ConditionType.CO2LEVEL;
-            case HUMIDITY:
-                return ConditionType.HUMIDITY;
-            case UNRECOGNIZED:
-                throw new IllegalArgumentException("Unknown condition type: " + proto);
-            default:
-                throw new IllegalArgumentException("Unknown condition type: " + proto);
-        }
+        return switch (proto) {
+            case MOTION -> ConditionType.MOTION;
+            case LUMINOSITY -> ConditionType.LUMINOSITY;
+            case SWITCH -> ConditionType.SWITCH;
+            case TEMPERATURE -> ConditionType.TEMPERATURE;
+            case CO2LEVEL -> ConditionType.CO2LEVEL;
+            case HUMIDITY -> ConditionType.HUMIDITY;
+            default -> throw new IllegalArgumentException("Unknown condition type: " + proto);
+        };
     }
 
     private ConditionOperation mapConditionOperation(ConditionOperationProto proto) {
-        switch (proto) {
-            case EQUALS:
-                return ConditionOperation.EQUALS;
-            case GREATER_THAN:
-                return ConditionOperation.GREATER_THAN;
-            case LOWER_THAN:
-                return ConditionOperation.LOWER_THAN;
-            case UNRECOGNIZED:
-                throw new IllegalArgumentException("Unknown condition operation: " + proto);
-            default:
-                throw new IllegalArgumentException("Unknown condition operation: " + proto);
-        }
+        return switch (proto) {
+            case EQUALS -> ConditionOperation.EQUALS;
+            case GREATER_THAN -> ConditionOperation.GREATER_THAN;
+            case LOWER_THAN -> ConditionOperation.LOWER_THAN;
+            default -> throw new IllegalArgumentException("Unknown condition operation: " + proto);
+        };
     }
 
     private ActionType mapActionType(ActionTypeProto proto) {
-        switch (proto) {
-            case ACTIVATE:
-                return ActionType.ACTIVATE;
-            case DEACTIVATE:
-                return ActionType.DEACTIVATE;
-            case INVERSE:
-                return ActionType.INVERSE;
-            case SET_VALUE:
-                return ActionType.SET_VALUE;
-            case UNRECOGNIZED:
-                throw new IllegalArgumentException("Unknown action type: " + proto);
-            default:
-                throw new IllegalArgumentException("Unknown action type: " + proto);
-        }
+        return switch (proto) {
+            case ACTIVATE -> ActionType.ACTIVATE;
+            case DEACTIVATE -> ActionType.DEACTIVATE;
+            case INVERSE -> ActionType.INVERSE;
+            case SET_VALUE -> ActionType.SET_VALUE;
+            default -> throw new IllegalArgumentException("Unknown action type: " + proto);
+        };
     }
 
     private ScenarioCondition mapScenarioCondition(ScenarioConditionProto proto) {

@@ -33,8 +33,12 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
             responseObserver.onCompleted();
             log.debug("Successfully processed sensor event: {}", request.getId());
         } catch (Exception e) {
-            log.error("Error processing sensor event: {}", request.getId(), e);
+            log.error("Error processing sensor event: id={}, hubId={}, payloadCase={}", 
+                    request.getId(), request.getHubId(), request.getPayloadCase(), e);
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            if (e.getCause() != null) {
+                log.error("Caused by: {}", e.getCause().getMessage(), e.getCause());
+            }
             responseObserver.onError(Status.INTERNAL
                     .withDescription(errorMessage)
                     .withCause(e)

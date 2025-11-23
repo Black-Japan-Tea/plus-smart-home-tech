@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.dto.HubEvent;
 import ru.yandex.practicum.kafka.telemetry.dto.SensorEvent;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.mapper.AvroMapper;
 import ru.yandex.practicum.kafka.telemetry.service.CollectorService;
 import ru.yandex.practicum.kafka.telemetry.service.KafkaProducerService;
@@ -21,7 +23,7 @@ public class CollectorServiceImpl implements CollectorService {
     public void collectSensorEvent(SensorEvent event) {
         try {
             log.debug("Received sensor event: {}", event);
-            var avroEvent = avroMapper.toAvro(event);
+            SensorEventAvro avroEvent = avroMapper.toAvro(event);
             kafkaProducerService.sendSensorEvent(avroEvent);
             log.debug("Successfully processed sensor event: {}", event.getId());
         } catch (Exception e) {
@@ -34,7 +36,7 @@ public class CollectorServiceImpl implements CollectorService {
     public void collectHubEvent(HubEvent event) {
         try {
             log.debug("Received hub event: {}", event);
-            var avroEvent = avroMapper.toAvro(event);
+            HubEventAvro avroEvent = avroMapper.toAvro(event);
             kafkaProducerService.sendHubEvent(avroEvent);
             log.debug("Successfully processed hub event: {}", event.getHubId());
         } catch (Exception e) {

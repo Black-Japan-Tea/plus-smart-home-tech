@@ -14,7 +14,7 @@ public class AvroMapper {
 
     public SensorEventAvro toAvro(SensorEvent event) {
         try {
-            var builder = SensorEventAvro.newBuilder()
+            SensorEventAvro.Builder builder = SensorEventAvro.newBuilder()
                     .setId(event.getId())
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp().toEpochMilli());
@@ -27,7 +27,7 @@ public class AvroMapper {
                     .setCo2Level(climateEvent.getCo2Level())
                     .build();
             case LightSensorEvent lightEvent -> {
-                var lightBuilder = LightSensorAvro.newBuilder();
+                LightSensorAvro.Builder lightBuilder = LightSensorAvro.newBuilder();
                 lightBuilder.setLinkQuality(lightEvent.getLinkQuality() != null ? lightEvent.getLinkQuality() : 0);
                 lightBuilder.setLuminosity(lightEvent.getLuminosity() != null ? lightEvent.getLuminosity() : 0);
                 payload = lightBuilder.build();
@@ -56,7 +56,7 @@ public class AvroMapper {
 
     public HubEventAvro toAvro(HubEvent event) {
         try {
-            var builder = HubEventAvro.newBuilder()
+            HubEventAvro.Builder builder = HubEventAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp().toEpochMilli());
 
@@ -129,7 +129,7 @@ public class AvroMapper {
     }
 
     private ScenarioConditionAvro mapCondition(ScenarioCondition condition) {
-        var builder = ScenarioConditionAvro.newBuilder()
+        ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
                 .setSensorId(condition.getSensorId())
                 .setType(mapConditionType(condition.getType()))
                 .setOperation(mapConditionOperation(condition.getOperation()));
@@ -142,7 +142,7 @@ public class AvroMapper {
     }
 
     private DeviceActionAvro mapAction(DeviceAction action) {
-        var builder = DeviceActionAvro.newBuilder()
+        DeviceActionAvro.Builder builder = DeviceActionAvro.newBuilder()
                 .setSensorId(action.getSensorId())
                 .setType(mapActionType(action.getType()));
 
