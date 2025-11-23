@@ -25,16 +25,20 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     @Override
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.info("Received sensor event via gRPC: {}", request.getId());
+            log.info("Received sensor event via gRPC: id={}, hubId={}, payloadCase={}", 
+                    request.getId(), request.getHubId(), request.getPayloadCase());
             SensorEvent dto = protobufMapper.toDto(request);
+            log.debug("Converted to DTO: type={}, id={}, hubId={}", 
+                    dto.getClass().getSimpleName(), dto.getId(), dto.getHubId());
             collectorService.collectSensorEvent(dto);
             
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
             log.debug("Successfully processed sensor event: {}", request.getId());
         } catch (Exception e) {
-            log.error("Error processing sensor event: id={}, hubId={}, payloadCase={}", 
-                    request.getId(), request.getHubId(), request.getPayloadCase(), e);
+            log.error("Error processing sensor event: id={}, hubId={}, payloadCase={}, error={}", 
+                    request.getId(), request.getHubId(), request.getPayloadCase(), 
+                    e.getClass().getSimpleName() + ": " + (e.getMessage() != null ? e.getMessage() : ""), e);
             String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             if (e.getCause() != null) {
                 log.error("Caused by: {}", e.getCause().getMessage(), e.getCause());
