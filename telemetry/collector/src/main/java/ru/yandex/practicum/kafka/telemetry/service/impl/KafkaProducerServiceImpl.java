@@ -30,7 +30,14 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
     @Override
     public void sendSensorEvent(SensorEventAvro event) {
         try {
-            log.debug("Sending sensor event to topic {}: {}", sensorsTopic, event);
+            if (event == null) {
+                throw new IllegalArgumentException("Sensor event cannot be null");
+            }
+            if (event.getId() == null || event.getId().isEmpty()) {
+                throw new IllegalArgumentException("Sensor event id cannot be null or empty");
+            }
+            log.debug("Sending sensor event to topic {}: id={}, hubId={}", 
+                    sensorsTopic, event.getId(), event.getHubId());
             ProducerRecord<String, SensorEventAvro> record = 
                 new ProducerRecord<>(sensorsTopic, event.getId(), event);
             Future<RecordMetadata> future = sensorEventKafkaProducer.send(record);
@@ -38,7 +45,7 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
             log.debug("Successfully sent sensor event to topic {} at offset {}", 
                 sensorsTopic, metadata.offset());
         } catch (Exception e) {
-            log.error("Error sending sensor event to topic {}: {}", sensorsTopic, event, e);
+            log.error("Error sending sensor event to topic {}: event={}", sensorsTopic, event, e);
             throw new RuntimeException("Failed to send sensor event to Kafka", e);
         }
     }
@@ -46,15 +53,22 @@ public class KafkaProducerServiceImpl implements KafkaProducerService {
     @Override
     public void sendHubEvent(HubEventAvro event) {
         try {
-            log.debug("Sending hub event to topic {}: {}", hubsTopic, event);
+            if (event == null) {
+                throw new IllegalArgumentException("Hub event cannot be null");
+            }
+            String hubId = event.getHubId();
+            if (hubId == null || hubId.isEmpty()) {
+                throw new IllegalArgumentException("Hub event hubId cannot be null or empty");
+            }
+            log.debug("Sending hub event to topic {}: hubId={}", hubsTopic, hubId);
             ProducerRecord<String, HubEventAvro> record = 
-                new ProducerRecord<>(hubsTopic, event.getHubId(), event);
+                new ProducerRecord<>(hubsTopic, hubId, event);
             Future<RecordMetadata> future = hubEventKafkaProducer.send(record);
             RecordMetadata metadata = future.get();
             log.debug("Successfully sent hub event to topic {} at offset {}", 
                 hubsTopic, metadata.offset());
         } catch (Exception e) {
-            log.error("Error sending hub event to topic {}: {}", hubsTopic, event, e);
+            log.error("Error sending hub event to topic {}: event={}", hubsTopic, event, e);
             throw new RuntimeException("Failed to send hub event to Kafka", e);
         }
     }

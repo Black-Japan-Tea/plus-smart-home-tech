@@ -89,6 +89,20 @@ public class AvroMapper {
 
     public HubEventAvro toAvro(HubEvent event) {
         try {
+            log.debug("Converting hub event to Avro: type={}, hubId={}", 
+                    event != null ? event.getClass().getSimpleName() : "null",
+                    event != null ? event.getHubId() : "null");
+            
+            if (event == null) {
+                throw new IllegalArgumentException("Hub event cannot be null");
+            }
+            if (event.getHubId() == null || event.getHubId().isEmpty()) {
+                throw new IllegalArgumentException("Hub event hubId cannot be null or empty");
+            }
+            if (event.getTimestamp() == null) {
+                throw new IllegalArgumentException("Hub event timestamp cannot be null");
+            }
+            
             HubEventAvro.Builder builder = HubEventAvro.newBuilder()
                     .setHubId(event.getHubId())
                     .setTimestamp(event.getTimestamp().toEpochMilli());
