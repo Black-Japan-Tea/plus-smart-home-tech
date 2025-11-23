@@ -10,6 +10,8 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import ru.yandex.practicum.grpc.telemetry.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.SensorEventProto;
 import ru.yandex.practicum.grpc.telemetry.CollectorControllerGrpc;
+import ru.yandex.practicum.kafka.telemetry.dto.HubEvent;
+import ru.yandex.practicum.kafka.telemetry.dto.SensorEvent;
 import ru.yandex.practicum.kafka.telemetry.mapper.ProtobufMapper;
 import ru.yandex.practicum.kafka.telemetry.service.CollectorService;
 
@@ -25,7 +27,7 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
         try {
             log.info("Received sensor event via gRPC: {}", request.getId());
-            var dto = protobufMapper.toDto(request);
+            SensorEvent dto = protobufMapper.toDto(request);
             collectorService.collectSensorEvent(dto);
             
             responseObserver.onNext(Empty.getDefaultInstance());
@@ -45,7 +47,7 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
         try {
             log.info("Received hub event via gRPC: {}", request.getHubId());
-            var dto = protobufMapper.toDto(request);
+            HubEvent dto = protobufMapper.toDto(request);
             collectorService.collectHubEvent(dto);
             
             responseObserver.onNext(Empty.getDefaultInstance());
