@@ -134,48 +134,60 @@ public class ProtobufMapper {
     }
 
     private DeviceType mapDeviceType(DeviceTypeProto proto) {
+        if (proto == DeviceTypeProto.DEVICE_TYPE_UNSPECIFIED || proto == DeviceTypeProto.UNRECOGNIZED) {
+            log.error("Received device with unspecified or unrecognized type: {}", proto);
+            throw new IllegalArgumentException("Device type is unspecified or unrecognized: " + proto);
+        }
         return switch (proto) {
-            case DEVICE_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Device type is unspecified");
             case MOTION_SENSOR -> DeviceType.MOTION_SENSOR;
             case TEMPERATURE_SENSOR -> DeviceType.TEMPERATURE_SENSOR;
             case LIGHT_SENSOR -> DeviceType.LIGHT_SENSOR;
             case CLIMATE_SENSOR -> DeviceType.CLIMATE_SENSOR;
             case SWITCH_SENSOR -> DeviceType.SWITCH_SENSOR;
-            case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown device type: " + proto);
+            default -> throw new IllegalArgumentException("Unknown device type: " + proto);
         };
     }
 
     private ConditionType mapConditionType(ConditionTypeProto proto) {
+        if (proto == ConditionTypeProto.CONDITION_TYPE_UNSPECIFIED || proto == ConditionTypeProto.UNRECOGNIZED) {
+            log.error("Received condition with unspecified or unrecognized type: {}", proto);
+            throw new IllegalArgumentException("Condition type is unspecified or unrecognized: " + proto);
+        }
         return switch (proto) {
-            case CONDITION_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Condition type is unspecified");
             case MOTION -> ConditionType.MOTION;
             case LUMINOSITY -> ConditionType.LUMINOSITY;
             case SWITCH -> ConditionType.SWITCH;
             case TEMPERATURE -> ConditionType.TEMPERATURE;
             case CO2LEVEL -> ConditionType.CO2LEVEL;
             case HUMIDITY -> ConditionType.HUMIDITY;
-            case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown condition type: " + proto);
+            default -> throw new IllegalArgumentException("Unknown condition type: " + proto);
         };
     }
 
     private ConditionOperation mapConditionOperation(ConditionOperationProto proto) {
+        if (proto == ConditionOperationProto.CONDITION_OPERATION_UNSPECIFIED || proto == ConditionOperationProto.UNRECOGNIZED) {
+            log.error("Received condition with unspecified or unrecognized operation: {}", proto);
+            throw new IllegalArgumentException("Condition operation is unspecified or unrecognized: " + proto);
+        }
         return switch (proto) {
-            case CONDITION_OPERATION_UNSPECIFIED -> throw new IllegalArgumentException("Condition operation is unspecified");
             case EQUALS -> ConditionOperation.EQUALS;
             case GREATER_THAN -> ConditionOperation.GREATER_THAN;
             case LOWER_THAN -> ConditionOperation.LOWER_THAN;
-            case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown condition operation: " + proto);
+            default -> throw new IllegalArgumentException("Unknown condition operation: " + proto);
         };
     }
 
     private ActionType mapActionType(ActionTypeProto proto) {
+        if (proto == ActionTypeProto.ACTION_TYPE_UNSPECIFIED || proto == ActionTypeProto.UNRECOGNIZED) {
+            log.error("Received action with unspecified or unrecognized type: {}", proto);
+            throw new IllegalArgumentException("Action type is unspecified or unrecognized: " + proto);
+        }
         return switch (proto) {
-            case ACTION_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Action type is unspecified");
             case ACTIVATE -> ActionType.ACTIVATE;
             case DEACTIVATE -> ActionType.DEACTIVATE;
             case INVERSE -> ActionType.INVERSE;
             case SET_VALUE -> ActionType.SET_VALUE;
-            case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown action type: " + proto);
+            default -> throw new IllegalArgumentException("Unknown action type: " + proto);
         };
     }
 

@@ -44,7 +44,19 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
     @Override
     public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
         try {
-            log.info("Received hub event via gRPC: {}", request.getHubId());
+            log.info("Received hub event via gRPC: hubId={}, payloadCase={}", 
+                request.getHubId(), request.getPayloadCase());
+            
+            // Логируем детали события для диагностики
+            if (request.hasDeviceAdded()) {
+                var deviceAdded = request.getDeviceAdded();
+                log.debug("DeviceAdded: id={}, type={}", deviceAdded.getId(), deviceAdded.getType());
+            } else if (request.hasScenarioAdded()) {
+                var scenarioAdded = request.getScenarioAdded();
+                log.debug("ScenarioAdded: name={}, conditions={}, actions={}", 
+                    scenarioAdded.getName(), scenarioAdded.getConditionCount(), scenarioAdded.getActionCount());
+            }
+            
             var dto = protobufMapper.toDto(request);
             collectorService.collectHubEvent(dto);
             
@@ -52,7 +64,8 @@ public class GrpcEventController extends CollectorControllerGrpc.CollectorContro
             responseObserver.onCompleted();
             log.debug("Successfully processed hub event: {}", request.getHubId());
         } catch (Exception e) {
-            log.error("Error processing hub event: {}", request.getHubId(), e);
+            log.error("Error processing hub event: hubId={}, payloadCase={}, error={}", 
+                request.getHubId(), request.getPayloadCase(), e.getMessage(), e);
             responseObserver.onError(new StatusRuntimeException(
                     Status.INTERNAL
                             .withDescription(e.getLocalizedMessage())
