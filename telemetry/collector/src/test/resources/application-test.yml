@@ -1,0 +1,4 @@
+logging:
+  level:
+    ru.yandex.practicum.kafka.telemetry.mapper.ProtobufMapper: WARN
+

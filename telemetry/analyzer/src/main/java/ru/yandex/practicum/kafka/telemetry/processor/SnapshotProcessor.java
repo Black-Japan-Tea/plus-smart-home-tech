@@ -112,7 +112,8 @@ public class SnapshotProcessor {
         List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
 
         if (scenarios.isEmpty()) {
-            log.warn("Нет сценариев для хаба: {}", hubId);
+            log.warn("Нет сценариев для хаба: {}. Проверьте, что события SCENARIO_ADDED были успешно обработаны HubEventProcessor.", hubId);
+            log.warn("Убедитесь, что HubEventProcessor получает события из Kafka топика telemetry.hubs.v1");
             return;
         }
 
@@ -124,15 +125,30 @@ public class SnapshotProcessor {
                 scenario.getActions() != null ? scenario.getActions().size() : 0);
             
             // Логируем детали условий
-            if (scenario.getConditions() != null) {
+            if (scenario.getConditions() != null && !scenario.getConditions().isEmpty()) {
+                log.info("Условия сценария {}:", scenario.getName());
                 scenario.getConditions().forEach(sc -> {
-                    log.debug("Условие сценария {}: sensorId={}, type={}, operation={}, value={}", 
-                        scenario.getName(),
+                    log.info("  - sensorId={}, type={}, operation={}, value={}", 
                         sc.getSensor() != null ? sc.getSensor().getId() : "null",
                         sc.getCondition() != null ? sc.getCondition().getType() : "null",
                         sc.getCondition() != null ? sc.getCondition().getOperation() : "null",
                         sc.getCondition() != null ? sc.getCondition().getValue() : "null");
                 });
+            } else {
+                log.warn("Сценарий {} не имеет условий!", scenario.getName());
+            }
+            
+            // Логируем детали действий
+            if (scenario.getActions() != null && !scenario.getActions().isEmpty()) {
+                log.info("Действия сценария {}:", scenario.getName());
+                scenario.getActions().forEach(sa -> {
+                    log.info("  - sensorId={}, type={}, value={}", 
+                        sa.getSensor() != null ? sa.getSensor().getId() : "null",
+                        sa.getAction() != null ? sa.getAction().getType() : "null",
+                        sa.getAction() != null ? sa.getAction().getValue() : "null");
+                });
+            } else {
+                log.warn("Сценарий {} не имеет действий!", scenario.getName());
             }
         }
 
