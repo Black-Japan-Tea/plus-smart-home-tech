@@ -135,6 +135,7 @@ public class ProtobufMapper {
 
     private DeviceType mapDeviceType(DeviceTypeProto proto) {
         return switch (proto) {
+            case DEVICE_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Device type is unspecified");
             case MOTION_SENSOR -> DeviceType.MOTION_SENSOR;
             case TEMPERATURE_SENSOR -> DeviceType.TEMPERATURE_SENSOR;
             case LIGHT_SENSOR -> DeviceType.LIGHT_SENSOR;
@@ -146,6 +147,7 @@ public class ProtobufMapper {
 
     private ConditionType mapConditionType(ConditionTypeProto proto) {
         return switch (proto) {
+            case CONDITION_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Condition type is unspecified");
             case MOTION -> ConditionType.MOTION;
             case LUMINOSITY -> ConditionType.LUMINOSITY;
             case SWITCH -> ConditionType.SWITCH;
@@ -158,6 +160,7 @@ public class ProtobufMapper {
 
     private ConditionOperation mapConditionOperation(ConditionOperationProto proto) {
         return switch (proto) {
+            case CONDITION_OPERATION_UNSPECIFIED -> throw new IllegalArgumentException("Condition operation is unspecified");
             case EQUALS -> ConditionOperation.EQUALS;
             case GREATER_THAN -> ConditionOperation.GREATER_THAN;
             case LOWER_THAN -> ConditionOperation.LOWER_THAN;
@@ -167,6 +170,7 @@ public class ProtobufMapper {
 
     private ActionType mapActionType(ActionTypeProto proto) {
         return switch (proto) {
+            case ACTION_TYPE_UNSPECIFIED -> throw new IllegalArgumentException("Action type is unspecified");
             case ACTIVATE -> ActionType.ACTIVATE;
             case DEACTIVATE -> ActionType.DEACTIVATE;
             case INVERSE -> ActionType.INVERSE;
