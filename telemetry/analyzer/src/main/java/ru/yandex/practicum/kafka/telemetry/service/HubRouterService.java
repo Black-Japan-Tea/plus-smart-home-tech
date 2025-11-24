@@ -50,12 +50,13 @@ public class HubRouterService {
                         .build())
                     .build();
             
-            log.info("Sending action to hub {} for scenario {}: sensor={}, type={}, value={}",
+            log.info("Отправляем действие в Hub Router: hubId={}, scenario={}, sensorId={}, type={}, value={}",
                 scenario.getHubId(), scenario.getName(), sensorId, action.getType(), action.getValue());
             
             hubRouterClient.handleDeviceAction(request);
             
-            log.debug("Successfully sent action to hub router");
+            log.info("Действие успешно отправлено в Hub Router: hubId={}, scenario={}, sensorId={}",
+                scenario.getHubId(), scenario.getName(), sensorId);
         } catch (Exception e) {
             log.error("Error sending action to hub router for scenario {}: {}", 
                 scenario.getName(), e.getMessage(), e);

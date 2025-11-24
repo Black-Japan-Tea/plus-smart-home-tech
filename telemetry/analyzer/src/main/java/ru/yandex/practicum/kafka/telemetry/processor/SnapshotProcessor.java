@@ -73,6 +73,8 @@ public class SnapshotProcessor {
 
     private void processSnapshot(SensorsSnapshotAvro snapshot) {
         String hubId = snapshot.getHubId();
+        log.info("Обрабатываем снапшот для хаба: {}, количество датчиков: {}", 
+            hubId, snapshot.getSensorsState().size());
 
         // Загружаем все сценарии для данного хаба
         List<Scenario> scenarios = scenarioRepository.findByHubId(hubId);
@@ -82,7 +84,11 @@ public class SnapshotProcessor {
             return;
         }
 
-        log.debug("Проверяем {} сценариев для хаба: {}", scenarios.size(), hubId);
+        log.info("Проверяем {} сценариев для хаба: {}", scenarios.size(), hubId);
+        for (Scenario scenario : scenarios) {
+            log.debug("Проверяем сценарий: {} (условий: {}, действий: {})", 
+                scenario.getName(), scenario.getConditions().size(), scenario.getActions().size());
+        }
 
         // Проверяем каждый сценарий
         for (Scenario scenario : scenarios) {
@@ -90,8 +96,16 @@ public class SnapshotProcessor {
                 List<ru.yandex.practicum.kafka.telemetry.entity.ScenarioAction> actionsToExecute = 
                     evaluationService.evaluateScenario(scenario, snapshot);
 
+                log.info("Сценарий {} для хаба {}: найдено {} действий для выполнения", 
+                    scenario.getName(), hubId, actionsToExecute.size());
+
                 // Выполняем действия, если условия выполнены
                 for (ru.yandex.practicum.kafka.telemetry.entity.ScenarioAction action : actionsToExecute) {
+                    log.info("Выполняем действие для сценария {}: sensor={}, type={}, value={}", 
+                        scenario.getName(), 
+                        action.getSensor().getId(), 
+                        action.getAction().getType(), 
+                        action.getAction().getValue());
                     hubRouterService.executeAction(scenario, action);
                 }
             } catch (Exception e) {

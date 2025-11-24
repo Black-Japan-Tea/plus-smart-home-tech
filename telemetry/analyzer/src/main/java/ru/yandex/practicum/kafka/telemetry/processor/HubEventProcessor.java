@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.kafka.telemetry.entity.Scenario;
 import ru.yandex.practicum.kafka.telemetry.entity.Sensor;
 import ru.yandex.practicum.kafka.telemetry.event.*;
@@ -86,6 +87,7 @@ public class HubEventProcessor implements Runnable {
         }
     }
 
+    @Transactional
     private void handleDeviceAdded(String hubId, DeviceAddedEventAvro event) {
         try {
             Sensor sensor = hubEventMapper.toSensor(hubId, event);
@@ -98,6 +100,7 @@ public class HubEventProcessor implements Runnable {
         }
     }
 
+    @Transactional
     private void handleDeviceRemoved(String hubId, DeviceRemovedEventAvro event) {
         try {
             sensorRepository.deleteById(event.getId());
@@ -108,6 +111,7 @@ public class HubEventProcessor implements Runnable {
         }
     }
 
+    @Transactional
     private void handleScenarioAdded(String hubId, ScenarioAddedEventAvro event) {
         try {
             // Удаляем существующий сценарий с таким же именем, если есть
@@ -115,14 +119,26 @@ public class HubEventProcessor implements Runnable {
                 .ifPresent(scenarioRepository::delete);
 
             Scenario scenario = hubEventMapper.toScenario(hubId, event);
-            scenarioRepository.save(scenario);
-            log.info("Добавлен сценарий: hubId={}, name={}", hubId, event.getName());
+            log.debug("Создан сценарий перед сохранением: name={}, условий={}, действий={}", 
+                scenario.getName(), scenario.getConditions().size(), scenario.getActions().size());
+            
+            Scenario saved = scenarioRepository.save(scenario);
+            
+            // Перезагружаем сценарий, чтобы убедиться, что связи загружены
+            Scenario reloaded = scenarioRepository.findById(saved.getId())
+                .orElseThrow(() -> new IllegalStateException("Сценарий не найден после сохранения"));
+            
+            log.info("Добавлен сценарий: hubId={}, name={}, id={}, условий={}, действий={}", 
+                hubId, event.getName(), reloaded.getId(), 
+                reloaded.getConditions().size(), reloaded.getActions().size());
         } catch (Exception e) {
             log.error("Ошибка при добавлении сценария: hubId={}, name={}", 
                 hubId, event.getName(), e);
+            throw e;
         }
     }
 
+    @Transactional
     private void handleScenarioRemoved(String hubId, ScenarioRemovedEventAvro event) {
         try {
             scenarioRepository.findByHubIdAndName(hubId, event.getName())

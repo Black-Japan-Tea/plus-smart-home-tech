@@ -25,6 +25,8 @@ public class ScenarioEvaluationService {
     public List<ScenarioAction> evaluateScenario(Scenario scenario, SensorsSnapshotAvro snapshot) {
         Map<String, SensorStateAvro> sensorsState = snapshot.getSensorsState();
         
+        log.debug("Проверяем сценарий {}: {} условий", scenario.getName(), scenario.getConditions().size());
+        
         // Проверяем, что все условия сценария выполнены
         boolean allConditionsMet = scenario.getConditions().stream()
             .allMatch(scenarioCondition -> {
@@ -38,13 +40,20 @@ public class ScenarioEvaluationService {
                     return false;
                 }
                 
-                return evaluateCondition(condition, sensorState);
+                boolean result = evaluateCondition(condition, sensorState);
+                log.debug("Условие для датчика {} (type={}, operation={}, value={}): {}", 
+                    sensor.getId(), condition.getType(), condition.getOperation(), 
+                    condition.getValue(), result);
+                return result;
             });
         
         if (allConditionsMet) {
-            log.info("All conditions met for scenario {} in hub {}", 
-                scenario.getName(), scenario.getHubId());
+            log.info("Все условия выполнены для сценария {} в хабе {}, выполняем {} действий", 
+                scenario.getName(), scenario.getHubId(), scenario.getActions().size());
             return scenario.getActions();
+        } else {
+            log.debug("Не все условия выполнены для сценария {} в хабе {}", 
+                scenario.getName(), scenario.getHubId());
         }
         
         return List.of();
@@ -59,7 +68,11 @@ public class ScenarioEvaluationService {
         String operation = condition.getOperation();
         Integer conditionValue = condition.getValue();
         
-        return switch (conditionType) {
+        log.debug("Проверяем условие: type={}, operation={}, value={}, sensorData type={}", 
+            conditionType, operation, conditionValue, 
+            sensorData != null ? sensorData.getClass().getSimpleName() : "null");
+        
+        boolean result = switch (conditionType) {
             case "MOTION" -> evaluateMotionCondition(operation, conditionValue, sensorData);
             case "LUMINOSITY" -> evaluateLuminosityCondition(operation, conditionValue, sensorData);
             case "SWITCH" -> evaluateSwitchCondition(operation, conditionValue, sensorData);
@@ -71,6 +84,11 @@ public class ScenarioEvaluationService {
                 yield false;
             }
         };
+        
+        log.debug("Результат проверки условия: type={}, operation={}, value={}, result={}", 
+            conditionType, operation, conditionValue, result);
+        
+        return result;
     }
 
     private boolean evaluateMotionCondition(String operation, Integer conditionValue, Object sensorData) {

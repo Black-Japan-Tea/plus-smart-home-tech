@@ -17,17 +17,17 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ScenarioAction {
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "scenario_id", nullable = false)
     private Scenario scenario;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sensor_id", nullable = false)
     private Sensor sensor;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "action_id", nullable = false)
     private Action action;
 
