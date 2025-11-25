@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -23,7 +22,6 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class AggregationStarter {
 
     @Value("${kafka.topics.sensors:telemetry.sensors.v1}")
@@ -34,6 +32,13 @@ public class AggregationStarter {
 
     private final KafkaConsumer<String, SensorEventAvro> consumer;
     private final KafkaProducer<String, SensorsSnapshotAvro> producer;
+
+    public AggregationStarter(KafkaConsumer<String, SensorEventAvro> consumer,
+                              KafkaProducer<String, SensorsSnapshotAvro> producer) {
+        this.consumer = consumer;
+        this.producer = producer;
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+    }
 
     private final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
 

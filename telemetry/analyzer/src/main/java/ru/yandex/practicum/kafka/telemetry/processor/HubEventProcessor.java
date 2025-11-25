@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.processor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -16,7 +15,6 @@ import java.util.Collections;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class HubEventProcessor implements Runnable {
 
     @Value("${kafka.topics.hubs:telemetry.hubs.v1}")
@@ -27,6 +25,13 @@ public class HubEventProcessor implements Runnable {
 
     private final KafkaConsumer<String, HubEventAvro> consumer;
     private final HubEventService hubEventService;
+
+    public HubEventProcessor(KafkaConsumer<String, HubEventAvro> consumer,
+                             HubEventService hubEventService) {
+        this.consumer = consumer;
+        this.hubEventService = hubEventService;
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+    }
 
     private volatile boolean running = true;
 

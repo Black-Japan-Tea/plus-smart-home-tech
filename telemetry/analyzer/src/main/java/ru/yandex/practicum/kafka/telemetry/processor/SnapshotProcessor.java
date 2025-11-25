@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kafka.telemetry.processor;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -21,7 +20,6 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class SnapshotProcessor {
 
     @Value("${kafka.topics.snapshots:telemetry.snapshots.v1}")
@@ -36,6 +34,17 @@ public class SnapshotProcessor {
     private final DeviceActionDispatcher dispatcher;
 
     private volatile boolean running = true;
+
+    public SnapshotProcessor(KafkaConsumer<String, SensorsSnapshotAvro> consumer,
+                             ScenarioService scenarioService,
+                             ScenarioEvaluationService evaluationService,
+                             DeviceActionDispatcher dispatcher) {
+        this.consumer = consumer;
+        this.scenarioService = scenarioService;
+        this.evaluationService = evaluationService;
+        this.dispatcher = dispatcher;
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+    }
 
     public void start() {
         try {
