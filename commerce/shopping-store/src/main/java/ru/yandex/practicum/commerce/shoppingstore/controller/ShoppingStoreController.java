@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.shoppingstore.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.interaction.api.api.ShoppingStoreApi;
 import ru.yandex.practicum.commerce.interaction.api.dto.ProductCategory;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @Validated
+@RequestMapping(ShoppingStoreApi.API_PATH)
 @RequiredArgsConstructor
 public class ShoppingStoreController implements ShoppingStoreApi {
 

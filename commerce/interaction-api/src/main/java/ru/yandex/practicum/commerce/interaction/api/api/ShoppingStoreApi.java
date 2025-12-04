@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -20,8 +19,9 @@ import ru.yandex.practicum.commerce.interaction.api.dto.ProductDto;
 import ru.yandex.practicum.commerce.interaction.api.dto.SetProductQuantityStateRequest;
 
 @Validated
-@RequestMapping("/api/v1/shopping-store")
 public interface ShoppingStoreApi {
+
+    String API_PATH = "/api/v1/shopping-store";
 
     @GetMapping
     List<ProductDto> getProducts(@RequestParam("category") ProductCategory category,
