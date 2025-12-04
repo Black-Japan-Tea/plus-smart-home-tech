@@ -13,6 +13,11 @@ spring:
         useRandomPolicy: true
         max-interval: 6000
 
+# gRPC server configuration (fallback if config-server is unavailable)
+grpc:
+  server:
+    port: ${grpc.server.port:59091}
+
 eureka:
   client:
     serviceUrl:
