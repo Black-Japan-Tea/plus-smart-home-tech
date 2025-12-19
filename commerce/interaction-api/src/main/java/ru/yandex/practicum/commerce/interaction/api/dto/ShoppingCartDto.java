@@ -23,5 +23,11 @@ public class ShoppingCartDto {
     @Builder.Default
     @NotNull
     private Map<UUID, Long> products = new java.util.LinkedHashMap<>();
+
+    /**
+     * Имя пользователя, которому принадлежит корзина.
+     * Используется сервисом заказов для привязки заказа к клиенту.
+     */
+    private String username;
 }
 
