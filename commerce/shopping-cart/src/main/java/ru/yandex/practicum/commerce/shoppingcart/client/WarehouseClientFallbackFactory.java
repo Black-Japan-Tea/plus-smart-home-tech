@@ -4,8 +4,10 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.commerce.interaction.api.dto.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.AddressDto;
+import ru.yandex.practicum.commerce.interaction.api.dto.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.BookedProductsDto;
 import ru.yandex.practicum.commerce.interaction.api.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction.api.dto.ShippedToDeliveryRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.shoppingcart.exception.WarehouseUnavailableException;
 
@@ -32,6 +34,21 @@ public class WarehouseClientFallbackFactory implements FallbackFactory<Warehouse
 
             @Override
             public AddressDto getWarehouseAddress() {
+                throw buildException();
+            }
+
+            @Override
+            public BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
+                throw buildException();
+            }
+
+            @Override
+            public void shippedToDelivery(ShippedToDeliveryRequest request) {
+                throw buildException();
+            }
+
+            @Override
+            public void acceptReturn(java.util.Map<java.util.UUID, java.lang.Long> products) {
                 throw buildException();
             }
         };

@@ -32,6 +32,7 @@ public class ShoppingCartMapper {
         return ShoppingCartDto.builder()
                 .shoppingCartId(entity.getShoppingCartId())
                 .products(products)
+                .username(entity.getUsername())
                 .build();
     }
 }

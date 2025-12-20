@@ -7,10 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+import java.util.UUID;
+
 import ru.yandex.practicum.commerce.interaction.api.dto.AddProductToWarehouseRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.AddressDto;
+import ru.yandex.practicum.commerce.interaction.api.dto.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.BookedProductsDto;
 import ru.yandex.practicum.commerce.interaction.api.dto.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction.api.dto.ShippedToDeliveryRequest;
 import ru.yandex.practicum.commerce.interaction.api.dto.ShoppingCartDto;
 
 @Validated
@@ -29,5 +34,14 @@ public interface WarehouseApi {
 
     @GetMapping("/address")
     AddressDto getWarehouseAddress();
+
+    @PostMapping("/assembly")
+    BookedProductsDto assemblyProductsForOrder(@Valid @RequestBody AssemblyProductsForOrderRequest request);
+
+    @PostMapping("/shipped")
+    void shippedToDelivery(@Valid @RequestBody ShippedToDeliveryRequest request);
+
+    @PostMapping("/return")
+    void acceptReturn(@RequestBody Map<UUID, Long> products);
 }
 
