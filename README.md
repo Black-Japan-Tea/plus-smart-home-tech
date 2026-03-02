@@ -43,7 +43,7 @@ smart-home-tech/
     ├── collector/        # Сервис сбора данных
     └── serialization/    # Модуль сериализации
         ├── avro-schemas/ # Avro схемы
-        └── proto-schemas/ # Protocol Buffers схемы
+        └── proto-schemas/ # ProtoBuff схемы
 ```
 
 ## Технологический стек
